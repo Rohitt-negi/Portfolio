@@ -106,6 +106,9 @@ export default function Hero() {
             <a href="#projects" className="btn btn-outline">
               <span>⚡</span> View Projects
             </a>
+            <a href="/Rohit_CV.pdf" download className="btn btn-outline">
+              <span>📄</span> Download CV
+            </a>
           </div>
 
           <div className={styles.statsRow}>

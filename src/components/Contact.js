@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
 import ScrollReveal from "./ScrollReveal";
 import styles from "./Contact.module.css";
 
-const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
+const EMAILJS_SERVICE_ID = "service_z0larpn";
+const EMAILJS_TEMPLATE_ID = "template_37ijf0c";
+const EMAILJS_PUBLIC_KEY = "7kO65wrN9A6BzTc2n";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -24,30 +26,22 @@ export default function Contact() {
     e.preventDefault();
     setStatus("sending");
 
-    const text = `📬 *New Portfolio Message*\n\n👤 *Name:* ${formData.name}\n📧 *Email:* ${formData.email}\n📌 *Subject:* ${formData.subject || "N/A"}\n\n💬 *Message:*\n${formData.message}`;
-
     try {
-      const res = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text,
-            parse_mode: "Markdown",
-          }),
-        }
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject || "No Subject",
+          message: formData.message,
+        },
+        EMAILJS_PUBLIC_KEY
       );
 
-      if (res.ok) {
-        setStatus("success");
-        setFormData({ name: "", email: "", subject: "", message: "" });
-        setTimeout(() => setStatus("idle"), 4000);
-      } else {
-        setStatus("error");
-        setTimeout(() => setStatus("idle"), 4000);
-      }
+      setStatus("success");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setTimeout(() => setStatus("idle"), 4000);
     } catch {
       setStatus("error");
       setTimeout(() => setStatus("idle"), 4000);
